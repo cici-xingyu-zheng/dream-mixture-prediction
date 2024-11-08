@@ -40,11 +40,17 @@ best_rf_sparse = {'n_estimators': 300, 'min_samples_split': 5, 'min_samples_leaf
 sns.set_style('ticks')
 
 def evaluate_fold(y_true, y_pred):
+    '''
+    Evaluate the performance of a model (RMSE and Correlation) on a fold
+    '''
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     corr, _ = pearsonr(y_true, y_pred)
     return rmse, corr
 
 def stacking_ensemble_cv(X_dense, X_sparse, y, base_model_dense, base_model_sparse, meta_models, n_folds=10, seed=314159):
+    '''
+    Perform stacking ensemble cross-validation on the base and meta models
+    '''
     original_indices = np.arange(X_dense.shape[0] // 2)
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     
@@ -150,6 +156,9 @@ def stacking_ensemble_cv(X_dense, X_sparse, y, base_model_dense, base_model_spar
     return {'performance': overall_results, 'fold_results': fold_results}
 
 def visualize_fold_results(fold_results):
+    '''
+    Visualize the performance of models by fold
+    '''
     num_models = len(fold_results)
     fig, axes = plt.subplots(2, 2, figsize=(20, 16))
     
@@ -173,6 +182,9 @@ def visualize_fold_results(fold_results):
 
 
 def stacking_ensemble_cv_averaged(X_dense, X_sparse, y, base_model_dense, base_model_sparse, meta_models, n_folds=10, seed=314159):
+    '''
+    Perform stacking the cross-validation results on the base and meta models, with averaging of predictions
+    '''
     original_indices = np.arange(X_dense.shape[0] // 2)
     kf = KFold(n_splits=n_folds, shuffle=True, random_state=seed)
     
@@ -251,6 +263,9 @@ def stacking_ensemble_cv_averaged(X_dense, X_sparse, y, base_model_dense, base_m
     return {'performance': overall_results, 'fold_results': fold_results}
 
 def visualize_fold_results_averaged(fold_results):
+    '''
+    Visualize the performance of models by fold, with averaging of predictions
+    '''
     fig, axes = plt.subplots(1, 2, figsize=(20, 8))
     
     metrics = ['RMSE', 'Correlation']
@@ -271,6 +286,9 @@ def visualize_fold_results_averaged(fold_results):
     plt.show()
 
 def print_results(results):
+    '''
+    Print the overall performance and fold-wise results
+    '''
     overall_results = results['performance']
     fold_results = results['fold_results']
 
@@ -297,6 +315,9 @@ def print_results(results):
 
 
 def predict_base_models(X_dense_new, X_sparse_new, final_models):
+    '''
+    Predict with base models and average the predictions for each symmetric pair
+    '''
     base_predictions = {'dense': [], 'sparse': []}
     
     for _, models in final_models.items():
@@ -317,12 +338,18 @@ def predict_base_models(X_dense_new, X_sparse_new, final_models):
     return base_predictions, base_predictions_mean
 
 def evaluate_performance(y_true, y_pred):
+    '''
+    Evaluate the performance of the final model
+    '''
     y_true = (y_true[0::2] + y_true[1::2])/2
     rmse = np.sqrt(mean_squared_error(y_true, y_pred))
     corr, _ = pearsonr(y_true, y_pred)
     return rmse, corr
 
 def train_final_models(X_dense, X_sparse, y, base_model_dense_class, base_model_sparse_class, meta_models, n_models=10, seed = 0):
+    '''
+    Train the final model (base and meta models); again prediciton will be averaged over symmetric pairs.
+    '''
     final_models = {name: [] for name in meta_models.keys()}
     
     for seed in range(seed, n_models+ seed):
@@ -350,10 +377,14 @@ def train_final_models(X_dense, X_sparse, y, base_model_dense_class, base_model_
             else:
                 meta_model = meta_model_class(random_state=seed).fit(final_meta_features, y_avg)
             final_models[name].append((final_base_model_dense, final_base_model_sparse, meta_model))
+
     return final_models
 
 
 def predict_stacked_ensemble(X_dense_new, X_sparse_new, final_models):
+    '''
+    Predict with the final model (meta model)
+    '''
     predictions = {name: [] for name in final_models.keys()}
     
     for name, models in final_models.items():

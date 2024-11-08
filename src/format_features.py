@@ -41,7 +41,9 @@ test_set = pd.read_csv(test_task_file)
 
 
 def stacking_symmetric_X_features(CID2features_list, method, data = 'training'):
-
+    '''
+    Create symmetric copies of the samples and stack the samples together to format X feature matrix
+    '''
     # added for testing in different scenarios:
     if data == 'training':
         training_dataset = training_set
@@ -113,8 +115,10 @@ def stacking_symmetric_X_features(CID2features_list, method, data = 'training'):
 
     return (X_features_1, X_features_2), X_features, y_true
 
-# This is the same
 def ensemble_models(X_features, y_true, param_best, type = 'rf', num_models = 10):
+    '''
+    Train multiple models with different random seed.
+    '''
     models = []
     for i in range(num_models):
         if type == 'rf': 
@@ -127,6 +131,9 @@ def ensemble_models(X_features, y_true, param_best, type = 'rf', num_models = 10
     return models
 
 def stacking_X_test_features(CID2features_list, X_train_1, X_train_2, method, data = 'leaderboard'):
+    '''
+    Create symmetric copies of the samples and stack the samples together to format test X feature matrix
+    '''
 
     # Added for testing in different scenarios:
     if data == 'leaderboard':
@@ -209,6 +216,9 @@ def stacking_X_test_features(CID2features_list, X_train_1, X_train_2, method, da
 
 
 def pred_mean(models, X_test, return_original=False):
+    '''
+    Average the predictions of the models
+    '''
     y_pred_list = []
     y_pred_avg_list = []
     for model in models: 
@@ -229,6 +239,10 @@ def pred_mean(models, X_test, return_original=False):
 
 
 def bootstrap_metrics_small_sample(y_true, y_pred, n_iterations=1000):
+    '''
+    Calculate confidence intervals for correlation and RMSE using bootstrap resampling 
+    (for small sample sizes)
+    '''
     n_samples = len(y_true)
     results = {'corr': [], 'rmse': []}
     

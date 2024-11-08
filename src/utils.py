@@ -4,6 +4,9 @@ from scipy.special import logsumexp
 
 
 def get_individual_embedding(label, dataset, mixtures_IDs, CID2features):
+    '''
+    Get the individual embedding of the molecules in the mixture
+    '''
     # Grab the unique data row:
     row = mixtures_IDs[(mixtures_IDs['Mixture Label'] == label) & (mixtures_IDs['Dataset'] == dataset)]
     non_zero_CIDs = row.loc[:, row.columns.str.contains('CID')].loc[:, (row != 0).any(axis=0)]
@@ -18,9 +21,16 @@ def get_individual_embedding(label, dataset, mixtures_IDs, CID2features):
     return np.array(molecule_embeddings), CIDs
 
 def intensity_function(x, alpha_int = 1.3, beta_int = 0.07):
+    '''
+    Helper function. 
+    Intensity function for the odor molecules.
+    '''
     return 1 / (1 + np.exp(-alpha_int * (x - beta_int)))
 
 def combine_molecules_intensity_weighed(label, dataset, mixtures_IDs, CID2features, intensity_IDs):
+    '''
+    Combine the molecules in the mixture by intensity weighting
+    '''
     # Grab the unique data row:
     row = mixtures_IDs[(mixtures_IDs['Mixture Label'] == label) & (mixtures_IDs['Dataset'] == dataset)]
     intesnity_row = intensity_IDs[(intensity_IDs['Mixture Label'] == label) & (intensity_IDs['Dataset'] == dataset)]
@@ -86,6 +96,10 @@ def log_sum_exp_beta_nan(molecule_embeddings, beta):
 
 
 def format_Xy(training_set, mixtures_IDs, CID2features, method='log', beta=None):
+    '''
+    Format the training set for the model, here its not the final form for the features of a pair,
+    but we will use this to get the final form.
+    '''
     X = []
     y = []
     num_monos = []
@@ -107,7 +121,9 @@ def format_Xy(training_set, mixtures_IDs, CID2features, method='log', beta=None)
 
 
 def mean_squared_error(y_true, y_pred):
+
     mse = np.mean((y_true - y_pred) ** 2)
+
     return mse
 
 def get_euclidean_distance(mixture_1, mixture_2):
@@ -134,35 +150,7 @@ def get_cosine_similarity(mixture_1, mixture_2):
     return similarity
 
 def get_cosine_angle(mixture_1, mixture_2):
+
     cosyne_sim = get_cosine_similarity(mixture_1, mixture_2)
 
     return  math.acos(cosyne_sim)
-
-
-def intensity_function(x, alpha_int = 1.3, beta_int = 0.07):
-    return 1 / (1 + np.exp(-(x - alpha_int)/beta_int))
-
-def combine_molecules_intensity_weighed(label, dataset, mixtures_IDs, CID2features, mixtures_intensities):
-    # Grab the unique data row:
-    row = mixtures_IDs[(mixtures_IDs['Mixture Label'] == label) & (mixtures_IDs['Dataset'] == dataset)]
-    # The intensity of that data row:
-    intesnity_row = mixtures_intensities[(mixtures_intensities['Mixture Label'] == label) & (mixtures_intensities['Dataset'] == dataset)]
-    
-    non_zero_CIDs = row.loc[:, row.columns.str.contains('CID')].loc[:, (row != 0).any(axis=0)]
-    non_zero_intensities = intesnity_row.loc[:, intesnity_row.columns.str.contains('CID')].loc[:, (intesnity_row != 0).any(axis=0)]
-    if len(non_zero_CIDs) != 1:
-        print('Not a Unique pointer!!!')
-    CIDs = non_zero_CIDs.iloc[0].tolist()
-    intensities = non_zero_intensities.iloc[0].tolist()
-    CID2intensity = dict(zip(CIDs, intensities))
-
-    molecule_embeddings = []
-    # Create feature matrix for all number of mono odor molecules in the mixture:
-    for CID in CIDs:
-        molecule_embeddings.append(np.array(CID2features[CID])*intensity_function(CID2intensity[CID]/100))
-
-    # Combine by sum across molecules:
-    mixture_embedding = np.nansum(molecule_embeddings, axis=0)
-    
-    return mixture_embedding
-

@@ -20,7 +20,9 @@ from src.utils import *
 
 
 class MatchedKFold(BaseEstimator, MetaEstimatorMixin):
-    '''class inplace of KFold for random search'''
+    '''
+    class inplace of KFold for random search
+    '''
     def __init__(self, n_splits=5, shuffle=True, random_state=None):
         self.n_splits = n_splits
         self.shuffle = shuffle
@@ -40,7 +42,9 @@ class MatchedKFold(BaseEstimator, MetaEstimatorMixin):
         return self.n_splits
 
 def para_search(seed, X, y_true):
-
+    '''
+    Do random search over hyperparameter space, return best hyperparameters for RF and XGB models.
+    '''
     # Define the search space 
     rf_param_dist = {
         'n_estimators': [200, 300, 400, 500, 600, 700, 800],
@@ -107,7 +111,9 @@ def para_search(seed, X, y_true):
     return rf_random.best_params_, xgb_random.best_params_
 
 def avg_rf_best(rf_best, X_features, y_true, random_seeds = None):
-
+    '''
+    Average the performance of the best RF model over multiple random seeds.
+    '''
     if random_seeds == None:
         random_seeds = [42, 123, 456, 789, 1011]
 
@@ -199,7 +205,9 @@ def avg_rf_best(rf_best, X_features, y_true, random_seeds = None):
 
 
 def avg_xgb_best(xgb_best, X_features, y_true, random_seeds = None):
-
+    '''
+    Average the performance of the best XGB model over multiple random seeds.
+    '''
     if random_seeds == None:
         random_seeds = [42, 123, 456, 789, 1011]
 
