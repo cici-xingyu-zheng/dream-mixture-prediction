@@ -19,7 +19,7 @@ from src.utils import *
 input_path = os.path.join(parent_dir, 'Data')
 
 CID_file = 'molecules_train_cid.npy'
-mixture_file = 'Mixure_Definitions_Training_set_UPD2.csv'
+mixture_file = 'Mixure_Definitions_Training_set.csv'
 
 training_task_file = 'TrainingData_mixturedist.csv'
 all_task_file = os.path.join(parent_dir, 'Test', 'Data', 'AllData_mixturedist.csv')

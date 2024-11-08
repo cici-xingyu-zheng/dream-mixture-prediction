@@ -20,7 +20,6 @@ def get_individual_embedding(label, dataset, mixtures_IDs, CID2features):
 def intensity_function(x, alpha_int = 1.3, beta_int = 0.07):
     return 1 / (1 + np.exp(-alpha_int * (x - beta_int)))
 
-
 def combine_molecules_intensity_weighed(label, dataset, mixtures_IDs, CID2features, intensity_IDs):
     # Grab the unique data row:
     row = mixtures_IDs[(mixtures_IDs['Mixture Label'] == label) & (mixtures_IDs['Dataset'] == dataset)]
@@ -42,40 +41,6 @@ def combine_molecules_intensity_weighed(label, dataset, mixtures_IDs, CID2featur
     mixture_embedding = np.nansum(molecule_embeddings, axis=0)
     return mixture_embedding
 
-# def combine_molecules(label, dataset, mixtures_IDs, CID2features, method='avg', beta=None):
-#     """
-#     Return mixture embedding vector, and summary stats
-#     """
-#     molecule_embeddings, CIDs = get_individual_embedding(label, dataset, mixtures_IDs, CID2features)
-#     num_mono = molecule_embeddings.shape[0]
-
-#     if method == 'avg':
-#         mixture_embedding = molecule_embeddings.mean(axis=0)
-#     elif method == 'sum':
-#         mixture_embedding = molecule_embeddings.sum(axis=0)
-#     elif method == 'max':
-#         mixture_embedding = molecule_embeddings.max(axis=0)
-#     elif method == 'log':
-#         if beta is None:
-#             exp_embeddings = np.exp(molecule_embeddings)
-#             summed = np.sum(exp_embeddings, axis=0)
-#             mixture_embedding = np.log(summed)
-#         else:
-#             mixture_embedding = log_sum_exp_beta(molecule_embeddings, beta)
-#     elif method == 'geometric':
-#         product = np.prod(molecule_embeddings, axis=0)
-#         mixture_embedding = np.power(product, 1 / molecule_embeddings.shape[0])
-#     else:
-#         raise ValueError(f"Invalid method: {method}")
-
-#     return mixture_embedding, (num_mono, CIDs)
-
-
-# def log_sum_exp_beta(molecule_embeddings, beta):
-#     exp_embeddings = np.exp(beta * molecule_embeddings)
-#     summed = np.sum(exp_embeddings, axis=0)
-#     mixture_embedding = (1 / beta) * np.log(summed)
-#     return mixture_embedding
 
 def combine_molecules(label, dataset, mixtures_IDs, CID2features, method='avg', beta=None):
     """
@@ -168,7 +133,6 @@ def get_cosine_similarity(mixture_1, mixture_2):
     
     return similarity
 
-
 def get_cosine_angle(mixture_1, mixture_2):
     cosyne_sim = get_cosine_similarity(mixture_1, mixture_2)
 
@@ -177,7 +141,6 @@ def get_cosine_angle(mixture_1, mixture_2):
 
 def intensity_function(x, alpha_int = 1.3, beta_int = 0.07):
     return 1 / (1 + np.exp(-(x - alpha_int)/beta_int))
-
 
 def combine_molecules_intensity_weighed(label, dataset, mixtures_IDs, CID2features, mixtures_intensities):
     # Grab the unique data row:
