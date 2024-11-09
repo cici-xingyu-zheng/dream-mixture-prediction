@@ -17,22 +17,6 @@ Detailed model description see:
     conda activate dreamdf
     ```
 
-### Using pip
-
-1. **Create and activate a virtual environment**:
-
-    ```sh
-    python -m venv venv
-    source venv/bin/activate  # On Windows use `venv\Scripts\activate`
-    ```
-
-
-2. **Install dependencies**:
-
-    ```sh
-    pip install -r requirements.txt
-    ```
-
 ## Reproduce the submitted model
 
 Run the notebook: `submitted_model.ipynb`
