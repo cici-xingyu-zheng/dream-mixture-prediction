@@ -20,3 +20,5 @@ Detailed model description see:
 ## Reproduce the submitted model
 
 Run the notebook: `submitted_model.ipynb`
+
+The result should be in `/Test/Submission/Meta_symmetric_final`
